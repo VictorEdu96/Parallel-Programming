@@ -1,0 +1,10 @@
+function graph
+        X = [3,25,50,100,250,500,750,1000];
+        Y =[0.000002,0.000009,0.000021,0.000087,0.000303,0.001971,0.003990,0.008619];
+        plot(X,Y)
+        title ("Matrix Transposition");
+        xlabel("Size of the matrix");
+        ylabel("Time");
+endfunction
+
+graph();
