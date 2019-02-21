@@ -1,0 +1,7 @@
+Processors: 1, Matrix 15000x15000: 6.501287
+Processors: 2, Matrix 15000x15000: 5.379666
+Processors: 1, Matrix 1500x1500: 0.015607
+Processors: 2, Matrix 1500x1500: 0.026034
+Processors: 4, Matrix 1500x1500: 0.045667
+Processors: 1, Matrix 1500x1500: 0.037473
+Processors: 2, Matrix 1500x1500: 0.054701

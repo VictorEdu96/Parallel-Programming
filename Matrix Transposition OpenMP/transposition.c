@@ -40,6 +40,8 @@ int main (int argc, char **argv) {
   #pragma omp parallel for private(j)
   for (i = 0; i < rows; i++) {
     total_threads = omp_get_num_threads();
+    printf("Number of threads: %d: ", total_threads);
+  
     for (j = 0; j < columns; j++) {
       Trans[i][j] = Matrix[j][i];
     }
