@@ -43,13 +43,15 @@ void transposeMatrix(){
       transpose[i][j] = matrix[j][i];
     }
   }
+
+
   t = clock() - t;
   double time_taken = ((double)t) / CLOCKS_PER_SEC; // in seconds
-
 
   printf("Tranposing took %f seconds to execute \n", time_taken);
   fprintf(fp, "%dx%d: %f\n", N, M, time_taken);
   fclose(fp);
+  
   printMatrix(transpose);
 }
 
