@@ -1,4 +1,4 @@
-# Parallel-Programming
+# Parallel Programming
 Matrix Transposition
 
 
