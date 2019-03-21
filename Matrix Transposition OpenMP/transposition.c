@@ -6,13 +6,13 @@
 //----------
 int main (int argc, char **argv) {
 
-  int rows, columns, proccesors, total_threads, i, j;
+  int rows, columns, processors, total_threads, i, j;
   float **Matrix, **Trans;
   FILE *fp;
   fp = fopen("./runs.txt", "a+");
 
 //Asignar numero de procesadores, columnas y filas.
-  proccesors = atoi(argv[1]);
+  processors = atoi(argv[1]);
   rows = atoi(argv[2]);
   columns = atoi(argv[3]);
 
@@ -34,7 +34,7 @@ int main (int argc, char **argv) {
     }
   }
 
-  omp_set_num_threads(proccesors);
+  omp_set_num_threads(processors);
   clock_t t = clock();
 
   #pragma omp parallel for private(j)
@@ -51,7 +51,7 @@ int main (int argc, char **argv) {
   double time_taken = ((double)t) / CLOCKS_PER_SEC; // in seconds
   
   printf("****** Tranposing took [%f] seconds to execute ******\n", time_taken);
-  fprintf(fp, "Processors: %d, Matrix %dx%d: %f\n", proccesors, rows, columns, time_taken);
+  fprintf(fp, "Processors: %d, Matrix %dx%d: %f\n", processors, rows, columns, time_taken);
   fclose(fp);
 
 // printf("------------ORIGINAL------------\n");
