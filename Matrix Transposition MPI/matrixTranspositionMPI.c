@@ -28,15 +28,14 @@ void trans(double *a, int n)
 
 int main(int argc, char *argv[])
 {
-    
-    
+
     int i, j, nprocs, rank;
 
     MPI_Init(&argc, &argv);
     MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    
-    int ps = 128/nprocs;
+
+    int ps = 128 / nprocs;
     double a[128][ps];
     double b[128][ps];
     double time_start, time_end;
