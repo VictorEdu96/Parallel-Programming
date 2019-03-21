@@ -1,8 +1,6 @@
 #include <stdio.h>
 #include <mpi.h>
 
-//#define P 4
-
 void trans(double *a, int n)
 {
     int i, j;
@@ -40,18 +38,6 @@ int main(int argc, char *argv[])
     double b[128][ps];
     double time_start, time_end;
 
-    // if (rank == 0)
-    // {
-    //     printf("Transposicion de una Matriz de 128x128, dividida en 4 procesadores\n");
-    // }
-    // if (nprocs != 4)
-    // {
-    //     if (rank == 0)
-    //         printf("Error, el numero de procesadores debe ser 4\n");
-    //     MPI_Finalize();
-    //     return 1;
-    // }
-
     for (i = 0; i < 128; i++)
     {
         for (j = 0; j < ps; j++)
@@ -70,13 +56,8 @@ int main(int argc, char *argv[])
                  MPI_DOUBLE,
                  MPI_COMM_WORLD);
 
-    //time_start = MPI_Wtime();
-
     for (i = 0; i < nprocs; i++)
         trans(&b[i * ps][0], ps);
-
-    // time_end = MPI_Wtime();
-    // printf("Time took transposing: %f\n", time_end-time_start);
 
     for (i = 0; i < 128; i++)
     {
@@ -93,7 +74,9 @@ int main(int argc, char *argv[])
     }
 
     if (rank == 0)
+    {
         printf("Transpose seems ok\n");
+    }
 
     time_end = MPI_Wtime();
     printf("Time took transposing: %f\n", time_end - time_start);
