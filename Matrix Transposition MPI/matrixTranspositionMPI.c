@@ -1,21 +1,22 @@
-/* 
- * Number of processes is 4 and the dimension of the matrix is fixed to 128
- */
 #include <stdio.h>
 #include <mpi.h>
 
-void trans(double *a, int n){
-    // Transpose square matrix a, nxn
+//#define P 4
+
+void trans(double *a, int n)
+{
     int i, j;
     int ij, ji, l;
     double tmp;
     ij = 0;
     l = -1;
-    for (i = 0; i < n; i++) {
+    for (i = 0; i < n; i++)
+    {
         l += n + 1;
         ji = l;
         ij += i + 1;
-        for (j = i + 1; j < n; j++) {
+        for (j = i + 1; j < n; j++)
+        {
             tmp = a[ij];
             a[ij] = a[ji];
             a[ji] = tmp;
@@ -25,71 +26,78 @@ void trans(double *a, int n){
     }
 }
 
-int main(int argc, char *argv[]) {
-    double a[128][32];
-    double b[128][32];
-
+int main(int argc, char *argv[])
+{
+    
+    
     int i, j, nprocs, rank;
 
     MPI_Init(&argc, &argv);
     MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    
+    int ps = 128/nprocs;
+    double a[128][ps];
+    double b[128][ps];
+    double time_start, time_end;
 
-    if (rank == 0) {
-        printf("Transposicion de una Matriz de 128x128, dividida en 4 procesadores\n");
-    }
-    if (nprocs != 4) {
-        if (rank == 0)
-            printf("Error, el numero de procesadores debe ser 4\n");
-        MPI_Finalize();
-        return 1;
-    }
+    // if (rank == 0)
+    // {
+    //     printf("Transposicion de una Matriz de 128x128, dividida en 4 procesadores\n");
+    // }
+    // if (nprocs != 4)
+    // {
+    //     if (rank == 0)
+    //         printf("Error, el numero de procesadores debe ser 4\n");
+    //     MPI_Finalize();
+    //     return 1;
+    // }
 
-    for (i = 0; i < 128; i++){
-        for (j = 0; j < 32; j++){
-            a[i][j] = 1000 * i + j + 32 * rank;     //give every element a unique value
+    for (i = 0; i < 128; i++)
+    {
+        for (j = 0; j < ps; j++)
+        {
+            a[i][j] = 1000 * i + j + ps * rank;
         }
     }
 
-    /* do the MPI part of the transpose */
+    time_start = MPI_Wtime();
 
-    /* Tricky here is the number of items to send and receive. 
-   * Not 128x32 as one may guess, but the amount to send to one process
-   * and the amount to receive from any process */
-
-    MPI_Alltoall(&a[0][0],   /* address of data to send  */
-                 32 * 32,    /* number of items to send to one process  */
-                 MPI_DOUBLE, /* type of data  */
-                 &b[0][0],   /* address for receiving the data  */
-                 /* NOTE: send data and receive data may NOT overlap */
-                 32 * 32,    /* number of items to receive 
-				   from any process  */
-                 MPI_DOUBLE, /* type of receive data  */
+    MPI_Alltoall(&a[0][0],
+                 ps * ps,
+                 MPI_DOUBLE,
+                 &b[0][0],
+                 ps * ps,
+                 MPI_DOUBLE,
                  MPI_COMM_WORLD);
 
-    /* MPI_Alltoall does not a transpose of the data received, we have to
-   * do this ourself: */
+    //time_start = MPI_Wtime();
 
-    /* transpose 4 square matrices, order 32x32: */
+    for (i = 0; i < nprocs; i++)
+        trans(&b[i * ps][0], ps);
 
-    for (i = 0; i < 4; i++)
-        trans(&b[i * 32][0], 32);
-
-    /* now check the result */
+    // time_end = MPI_Wtime();
+    // printf("Time took transposing: %f\n", time_end-time_start);
 
     for (i = 0; i < 128; i++)
-        for (j = 0; j < 32; j++)
+    {
+        for (j = 0; j < ps; j++)
         {
-            if (b[i][j] != 1000 * (j + 32 * rank) + i)
+            if (b[i][j] != 1000 * (j + ps * rank) + i)
             {
                 printf("process %d found b[%d][%d] = %f, but %f was expected\n",
-                       rank, i, j, b[i][j], (double)(1000 * (j + 32 * rank) + i));
+                       rank, i, j, b[i][j], (double)(1000 * (j + ps * rank) + i));
                 MPI_Abort(MPI_COMM_WORLD, 1);
                 return 1;
             }
         }
+    }
+
     if (rank == 0)
         printf("Transpose seems ok\n");
+
+    time_end = MPI_Wtime();
+    printf("Time took transposing: %f\n", time_end - time_start);
 
     MPI_Finalize();
     return 0;
