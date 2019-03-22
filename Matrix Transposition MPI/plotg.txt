@@ -1,0 +1,10 @@
+function graph
+        X = [1, 2, 4];
+        Y =[0.002761, 0.005031, 0.166110];
+        plot(X,Y)
+        title ("Matrix Transposition MPI Version (512x512)");
+        xlabel("Number of Processors");
+        ylabel("Time");
+endfunction
+
+graph();
