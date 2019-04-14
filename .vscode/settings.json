@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "*.hmtl": "html",
+        "*.cu": "c"
+    }
+}
