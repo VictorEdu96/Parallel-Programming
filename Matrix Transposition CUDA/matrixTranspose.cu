@@ -12,15 +12,8 @@
  
  #define THREADS_PER_BLOCK_2D 16
  
- /* Simple utility function to check for CUDA runtime errors */
- //void checkCUDAError(const char *msg);
- 
- /* Host function that transposes a matrix */
- //void transpose_cpu(const char *mat_in, char *mat_out, unsigned int rows, unsigned int cols);
- 
  /* Kernel code */
- __global__ void transpose_gpu(const char *mat_in, char *mat_out,
-                               unsigned int rows, unsigned int cols)
+ __global__ void transpose_gpu(const char *mat_in, char *mat_out, unsigned int rows, unsigned int cols)
  {
      unsigned int idx = blockIdx.x * blockDim.x + threadIdx.x;
      unsigned int idy = blockIdx.y * blockDim.y + threadIdx.y;
@@ -55,16 +48,6 @@
      //Para poner tiempos en matriz
      FILE *fp;
      fp = fopen("./times.txt", "a+");
-      
- 
- 
- 
- 
- 
- 
- 
- 
- 
  
      /* Pointer for host memory */
      char *h_mat_in, *h_mat_out;
@@ -80,9 +63,6 @@
      cudaMalloc(&dev_mat_in, mat_size);
      cudaMalloc(&dev_mat_out, mat_size);
  
-     /* Check for any CUDA errors */
-     //checkCUDAError("cudaMalloc");
- 
      /* Fixed seed for illustration */
      srand(2047);
  
@@ -97,14 +77,11 @@
          //printf("\n");
      }
  
- 
-     // PRINTING ORIGINAL MATRIX 
+     // PRINTING ORIGINAL MATRIX
      //for (int i = 0; i < rows * cols; i++)
      //{
      //    printf("%i, ", h_mat_in[i]);
      //}
- 
- 
  
      cudaEventCreate(&start);
      cudaEventCreate(&stop);
@@ -114,9 +91,6 @@
      /* Host to device memory copy */
      cudaMemcpy(dev_mat_in, h_mat_in, mat_size, cudaMemcpyHostToDevice);
  
-     /* Check for any CUDA errors */
-     //checkCUDAError("cudaMemcpy");
- 
      /* Set grid and block dimensions properly */
      unsigned int grid_rows = (rows + THREADS_PER_BLOCK_2D - 1) / THREADS_PER_BLOCK_2D;
      unsigned int grid_cols = (cols + THREADS_PER_BLOCK_2D - 1) / THREADS_PER_BLOCK_2D;
@@ -124,7 +98,6 @@
      dim3 dimBlock(THREADS_PER_BLOCK_2D, THREADS_PER_BLOCK_2D);
  
      cudaEventRecord(start, 0);
-     // cudaEventSynchronize(start); needed?
  
      /* Launch kernel */
      transpose_gpu<<<dimGrid, dimBlock>>>(dev_mat_in, dev_mat_out, rows, cols);
@@ -133,23 +106,14 @@
      cudaEventSynchronize(stop);
      cudaEventElapsedTime(&elapsed_time_ms, start, stop);
  
-     /* Check for any CUDA errors */
-     //checkCUDAError("kernel invocation");
- 
      /* device to host copy */
      cudaMemcpy(h_mat_out, dev_mat_out, mat_size, cudaMemcpyDeviceToHost);
  
-     /* Check for any CUDA errors */
-     //checkCUDAError("cudaMemcpy");
+     printf("Time to transpose a matrix of %dx%d on GPU: %f ms.\n\n", rows, cols, elapsed_time_ms);
  
-     printf("Time to transpose a matrix of %dx%d on GPU: %f ms.\n\n", rows, cols,
-            elapsed_time_ms);
-      
      //IMPRIMIR TIEMPOS EN ARCHIVO times.txt
-     fprintf(fp, "[%d x %d] = %f ms.\n\n", rows, cols,
-            elapsed_time_ms);
-     fclose(fp);   
- 
+     fprintf(fp, "[%d x %d] = %f ms.\n\n", rows, cols, elapsed_time_ms);
+     fclose(fp);
  
      // PRINTING TRANSPOSED MATRIX
      //for (int i = 0; i < rows * cols; i++)
@@ -157,25 +121,9 @@
      //  printf("%i, ", h_mat_out[i]);
      //}
  
- 
- 
- 
      /* Free host and device memory */
      free(h_mat_in);
      free(h_mat_out);
      cudaFree(dev_mat_in);
      cudaFree(dev_mat_out);
- 
-     /* Check for any CUDA errors */
-     //checkCUDAError("cudaFree");
  }
- 
- //void checkCUDAError(const char *msg)
- //{
- //    cudaError_t err = cudaGetLastError();
- //    if (cudaSuccess != err)
- //    {
- //        fprintf(stderr, "Cuda error: %s: %s.\n", msg, cudaGetErrorString(err));
- //        exit(EXIT_FAILURE);
- //    }
- //}
