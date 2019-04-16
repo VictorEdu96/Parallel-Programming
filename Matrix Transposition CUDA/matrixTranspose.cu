@@ -1,3 +1,11 @@
+/*
+ * PARA CORRERLO
+ *   export LD_LIBRARY_PATH=/usr/local/cuda/lib
+ *   export PATH=$PATH:/usr/local/cuda/bin
+ *   nvcc -o prueba prueba.cu -O2 -lc -lm
+ *   ./prueba n n
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
@@ -76,10 +84,11 @@ int main(int argc, char **argv)
         //printf("\n");
     }
 
-    for (int i = 0; i < rows * cols; i++)
-    {
-        printf("%i, ", h_mat_in[i]);
-    }
+    // PRINTING ORIGINAL MATRIX
+    //for (int i = 0; i < rows * cols; i++)
+    //{
+    //    printf("%i, ", h_mat_in[i]);
+    //}
 
     cudaEventCreate(&start);
     cudaEventCreate(&stop);
@@ -120,10 +129,11 @@ int main(int argc, char **argv)
     printf("Time to transpose a matrix of %dx%d on GPU: %f ms.\n\n", rows, cols,
            elapsed_time_ms);
 
-    for (int i = 0; i < rows * cols; i++)
-    {
-        printf("%i, ", h_mat_out[i]);
-    }
+    // PRINTING TRANSPOSED MATRIX
+    //for (int i = 0; i < rows * cols; i++)
+    //{
+    //  printf("%i, ", h_mat_out[i]);
+    //}
 
     /* Free host and device memory */
     free(h_mat_in);
