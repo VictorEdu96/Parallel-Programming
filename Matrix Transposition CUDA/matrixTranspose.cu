@@ -6,6 +6,13 @@
  *   ./prueba n n
 */
 
+/*
+ * UNSIGNED INT --> Tipo de dato para enteros, números sin punto decimal. 
+ *                  Los enteros sin signo pueden ser tan grandes como 65535 
+ *                  y tan pequeños como 0. 
+ *                  Son almacenados como 16 bits de información.
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
@@ -24,7 +31,13 @@ __global__ void transpose_gpu(const char *mat_in, char *mat_out, unsigned int ro
         mat_out[trans_pos] = mat_in[pos];
     }
 }
- 
+
+
+void transponerMatrix(char *dmi, char *dmo, unsigned int r, unsigned int c){
+
+}
+
+
 int main(int argc, char **argv) {
  
     /* Process command-line arguments */
@@ -45,6 +58,14 @@ int main(int argc, char **argv) {
     FILE *fp;
     fp = fopen("./times.txt", "a+");
  
+
+
+
+    ///////////////////////////////////////////
+
+
+
+
     /* Pointer for host memory */
     char *h_mat_in, *h_mat_out;
     size_t mat_size = rows * cols * sizeof(char);
@@ -70,7 +91,19 @@ int main(int argc, char **argv) {
         }
         //printf("\n");
     }
+
+
+
+    ///////////////////////////////////////////
  
+    //transponerMatrix(dmi, dmo, r, c);
+
+
+    ///////////////////////////////////////////
+
+
+
+
     // PRINTING ORIGINAL MATRIX
     //for (int i = 0; i < rows * cols; i++)
     //{
