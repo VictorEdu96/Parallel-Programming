@@ -3,7 +3,7 @@
  *   export LD_LIBRARY_PATH=/usr/local/cuda/lib
  *   export PATH=$PATH:/usr/local/cuda/bin
  *   nvcc -o prueba prueba.cu -O2 -lc -lm
- *   ./prueba n n
+ *   ./prueba n
 */
 
 /*
@@ -59,8 +59,8 @@ int main(int argc, char **argv) {
         return EXIT_FAILURE;
     }
  
-    cudaEvent_t start, stop;
-    float elapsed_time_ms;
+    cudaEvent_t start, stop;                                                                // --> Va en funcion transponerMatrix
+    float elapsed_time_ms;                                                                  // --> Va en funcion transponerMatrix
  
     unsigned int rows = atoi(argv[1]);
     unsigned int cols = atoi(argv[1]);
@@ -70,8 +70,8 @@ int main(int argc, char **argv) {
     fp = fopen("./times.txt", "a+");
  
     /* Pointer for host memory */
-    char *h_mat_in, *h_mat_out;
-    size_t mat_size = rows * cols * sizeof(char);
+    char *h_mat_in, *h_mat_out;                                                             // --> Va en funcion transponerMatrix
+    size_t mat_size = rows * cols * sizeof(char);                                           // --> Va en funcion transponerMatrix
  
     /* Pointer for device memory */
     char *dev_mat_in, *dev_mat_out;
@@ -80,11 +80,11 @@ int main(int argc, char **argv) {
     h_mat_in = (char *)malloc(mat_size);
     h_mat_out = (char *)malloc(mat_size);
  
-    cudaMalloc(&dev_mat_in, mat_size);
-    cudaMalloc(&dev_mat_out, mat_size);
+    cudaMalloc(&dev_mat_in, mat_size);                                                      // --> Va en funcion transponerMatrix
+    cudaMalloc(&dev_mat_out, mat_size);                                                     // --> Va en funcion transponerMatrix
  
     /* Fixed seed for illustration */
-    srand(2047);
+    srand(2047);                        // --> Va en funcion transponerMatrix
  
     /* Initialize host memory */
     for (unsigned int i = 0; i < rows; ++i) {
@@ -98,28 +98,27 @@ int main(int argc, char **argv) {
     // PRINTING ORIGINAL MATRIX
     // printMatrix(rows, cols, h_mat_in);
  
-    cudaEventCreate(&start);
-    cudaEventCreate(&stop);
+    cudaEventCreate(&start); cudaEventCreate(&stop);                                        // --> Va en funcion transponerMatrix
  
     /*------------------------ COMPUTATION ON GPU ----------------------------*/
  
     /* Host to device memory copy */
-    cudaMemcpy(dev_mat_in, h_mat_in, mat_size, cudaMemcpyHostToDevice);
+    cudaMemcpy(dev_mat_in, h_mat_in, mat_size, cudaMemcpyHostToDevice);                     // --> Va en funcion transponerMatrix
  
     /* Set grid and block dimensions properly */
-    unsigned int grid_rows = (rows + THREADS_PER_BLOCK_2D - 1) / THREADS_PER_BLOCK_2D;
-    unsigned int grid_cols = (cols + THREADS_PER_BLOCK_2D - 1) / THREADS_PER_BLOCK_2D;
-    dim3 dimGrid(grid_cols, grid_rows);
-    dim3 dimBlock(THREADS_PER_BLOCK_2D, THREADS_PER_BLOCK_2D);
+    unsigned int grid_rows = (rows + THREADS_PER_BLOCK_2D - 1) / THREADS_PER_BLOCK_2D;      // --> Va en funcion transponerMatrix
+    unsigned int grid_cols = (cols + THREADS_PER_BLOCK_2D - 1) / THREADS_PER_BLOCK_2D;      // --> Va en funcion transponerMatrix
+    dim3 dimGrid(grid_cols, grid_rows);                                                     // --> Va en funcion transponerMatrix
+    dim3 dimBlock(THREADS_PER_BLOCK_2D, THREADS_PER_BLOCK_2D);                              // --> Va en funcion transponerMatrix
  
-    cudaEventRecord(start, 0);
+    cudaEventRecord(start, 0);                                                              // --> Va en funcion transponerMatrix
  
     /* Launch kernel */
-    transpose_gpu<<<dimGrid, dimBlock>>>(dev_mat_in, dev_mat_out, rows, cols);
+    transpose_gpu<<<dimGrid, dimBlock>>>(dev_mat_in, dev_mat_out, rows, cols);              // --> Va en funcion transponerMatrix
  
-    cudaEventRecord(stop, 0);
-    cudaEventSynchronize(stop);
-    cudaEventElapsedTime(&elapsed_time_ms, start, stop);
+    cudaEventRecord(stop, 0);                                                               // --> Va en funcion transponerMatrix
+    cudaEventSynchronize(stop);                                                             // --> Va en funcion transponerMatrix
+    cudaEventElapsedTime(&elapsed_time_ms, start, stop);                                    // --> Va en funcion transponerMatrix
  
     /* device to host copy */
     cudaMemcpy(h_mat_out, dev_mat_out, mat_size, cudaMemcpyDeviceToHost);
