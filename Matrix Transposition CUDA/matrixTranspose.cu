@@ -11,6 +11,12 @@
  *                  Los enteros sin signo pueden ser tan grandes como 65535 
  *                  y tan pequeños como 0. 
  *                  Son almacenados como 16 bits de información.
+ *
+ * SIZE_T --> is an unsigned integer type guaranteed to support the longest 
+ *            object for the platform you use. It is also the result of the 
+ *            sizeof operator.sizeof returns the size of the type in bytes.
+ *            So in your context of question in both cases you pass a 
+ *            size_t to malloc.
  */
 
  #include <stdio.h>
