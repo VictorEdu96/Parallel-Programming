@@ -13,38 +13,43 @@
  *                  Son almacenados como 16 bits de información.
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <assert.h>
-
-#define THREADS_PER_BLOCK_2D 16
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <assert.h>
  
-/* Kernel code */
-__global__ void transpose_gpu(const char *mat_in, char *mat_out, unsigned int rows, unsigned int cols){
-    unsigned int idx = blockIdx.x * blockDim.x + threadIdx.x;
-    unsigned int idy = blockIdx.y * blockDim.y + threadIdx.y;
- 
-    if (idx < cols && idy < rows) {
-        unsigned int pos = idy * cols + idx;
-        unsigned int trans_pos = idx * rows + idy;
- 
-        mat_out[trans_pos] = mat_in[pos];
-    }
+ #define THREADS_PER_BLOCK_2D 16
+  
+ /* Kernel code */
+ __global__ void transpose_gpu(const char *mat_in, char *mat_out, unsigned int rows, unsigned int cols){
+     unsigned int idx = blockIdx.x * blockDim.x + threadIdx.x;
+     unsigned int idy = blockIdx.y * blockDim.y + threadIdx.y;
+  
+     if (idx < cols && idy < rows) {
+         unsigned int pos = idy * cols + idx;
+         unsigned int trans_pos = idx * rows + idy;
+  
+         mat_out[trans_pos] = mat_in[pos];
+     }
 }
 
 
 void transponerMatrix(char *dmi, char *dmo, unsigned int r, unsigned int c){
+    
+}
 
+void printMatrix(unsigned int rows, unsigned int cols, char *matrix){
+    for (int i = 0; i < rows * cols; i++) {
+       printf("%i, ", matrix[i]);
+    }
 }
 
 
 int main(int argc, char **argv) {
  
     /* Process command-line arguments */
-    if (argc != 3) {
-        fprintf(stderr, "Usage: %s rows columns\n", argv[0]);
-        fprintf(stderr, "       rows is the number of rows of the input matrix\n");
-        fprintf(stderr, "       columns is the number of columns of the input matrix\n");
+    if (argc != 2) {
+        fprintf(stderr, "Usage: %s matrix_size\n", argv[0]);
+        fprintf(stderr, "       matrix_size is the number of rows and cols of the matrix\n");
         return EXIT_FAILURE;
     }
  
@@ -52,20 +57,12 @@ int main(int argc, char **argv) {
     float elapsed_time_ms;
  
     unsigned int rows = atoi(argv[1]);
-    unsigned int cols = atoi(argv[2]);
+    unsigned int cols = atoi(argv[1]);
  
     //Para poner tiempos en matriz
     FILE *fp;
     fp = fopen("./times.txt", "a+");
  
-
-
-
-    ///////////////////////////////////////////
-
-
-
-
     /* Pointer for host memory */
     char *h_mat_in, *h_mat_out;
     size_t mat_size = rows * cols * sizeof(char);
@@ -91,24 +88,9 @@ int main(int argc, char **argv) {
         }
         //printf("\n");
     }
-
-
-
-    ///////////////////////////////////////////
  
-    //transponerMatrix(dmi, dmo, r, c);
-
-
-    ///////////////////////////////////////////
-
-
-
-
     // PRINTING ORIGINAL MATRIX
-    //for (int i = 0; i < rows * cols; i++)
-    //{
-    //    printf("%i, ", h_mat_in[i]);
-    //}
+    // printMatrix(rows, cols, h_mat_in);
  
     cudaEventCreate(&start);
     cudaEventCreate(&stop);
@@ -143,14 +125,8 @@ int main(int argc, char **argv) {
     fclose(fp);
  
     // PRINTING TRANSPOSED MATRIX
-    //for (int i = 0; i < rows * cols; i++)
-    //{
-    //  printf("%i, ", h_mat_out[i]);
-    //}
- 
+    // printMatrix(rows, cols, h_mat_out);
+
     /* Free host and device memory */
-    free(h_mat_in);
-    free(h_mat_out);
-    cudaFree(dev_mat_in);
-    cudaFree(dev_mat_out);
+    free(h_mat_in); free(h_mat_out); cudaFree(dev_mat_in); cudaFree(dev_mat_out);
 }
