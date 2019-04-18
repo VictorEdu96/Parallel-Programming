@@ -46,7 +46,7 @@ void printTimeOnFile(unsigned int rows, unsigned int cols, float elapsed_time_ms
     fclose(fp);
 }
  
-__global__ void transpose_gpu(const char *mat_in, char *mat_out, unsigned int rows, unsigned int cols){
+__global__ void kernelTransposeMatrix(const char *mat_in, char *mat_out, unsigned int rows, unsigned int cols){
      unsigned int idx = blockIdx.x * blockDim.x + threadIdx.x;
      unsigned int idy = blockIdx.y * blockDim.y + threadIdx.y;
   
@@ -79,7 +79,7 @@ void transponerMatrix(char *h_mat_in, char *h_mat_out, unsigned int rows, unsign
  
     cudaEventRecord(start, 0);
  
-    transpose_gpu<<<bloques, hilos>>>(dev_mat_in, dev_mat_out, rows, cols);
+    kernelTransposeMatrix<<<bloques, hilos>>>(dev_mat_in, dev_mat_out, rows, cols);
  
     cudaEventRecord(stop, 0);
     cudaEventSynchronize(stop);
