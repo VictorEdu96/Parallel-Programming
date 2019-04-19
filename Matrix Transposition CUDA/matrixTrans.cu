@@ -1,9 +1,9 @@
 /*
- * PARA CORRERLO
- *   export LD_LIBRARY_PATH=/usr/local/cuda/lib
- *   export PATH=$PATH:/usr/local/cuda/bin
- *   nvcc -o matrixTrans matrixTrans.cu -O2 -lc -lm
- *   ./matrixTrans n
+ * PARA CORRERLO:
+ *   $ export LD_LIBRARY_PATH=/usr/local/cuda/lib
+ *   $ export PATH=$PATH:/usr/local/cuda/bin
+ *   $ nvcc -o matrixTrans matrixTrans.cu -O2 -lc -lm
+ *   $ ./matrixTrans n
 */
 
 /*
@@ -69,14 +69,13 @@ void transponerMatrix(char *h_mat_in, char *h_mat_out, unsigned int rows, unsign
 
    cudaSetDevice(gpudev);
 
-   cudaEventCreate(&start); cudaEventCreate(&stop);
+   cudaEventCreate(&start);
+   cudaEventCreate(&stop);
    cudaEventRecord(start, 0);
    
    // 1. Asignar memoria
    cudaMalloc(&dev_mat_in, size);
    cudaMalloc(&dev_mat_out, size);
-
-   srand(getpid());
 
    // 2. Copiar datos del Host al Device
    cudaMemcpy(dev_mat_in, h_mat_in, size, cudaMemcpyHostToDevice);
@@ -88,18 +87,18 @@ void transponerMatrix(char *h_mat_in, char *h_mat_out, unsigned int rows, unsign
    cudaMemcpy(h_mat_out, dev_mat_out, size, cudaMemcpyDeviceToHost);
 
    // 5. Liberar Memoria
-   cudaFree(dev_mat_in); cudaFree(dev_mat_out);
+   cudaFree(dev_mat_in);
+   cudaFree(dev_mat_out);
    cudaEventRecord(stop, 0);
    cudaEventSynchronize(stop);
-
    cudaEventElapsedTime(&elapsed_time_ms, start, stop);
-   cudaEventDestroy(start); cudaEventDestroy(stop); 
+   cudaEventDestroy(start); 
+   cudaEventDestroy(stop); 
 }
 //---------------------------------------------------------------------------
 int main(int argc, char **argv) {
    if (argc != 2) {
-       fprintf(stderr, "Usage: %s matrix_size\n", argv[0]);
-       fprintf(stderr, "       matrix_size is the number of rows and cols of the matrix\n");
+       fprintf(stderr, "Must be executed as: %s matrix_size\n", argv[0]);
        return EXIT_FAILURE;
    }
 
@@ -116,12 +115,12 @@ int main(int argc, char **argv) {
            h_mat_in[i * cols + j] = rand() % (rows * cols);
        }
    }
-   //printMatrix(rows, cols, h_mat_in);
+   printMatrix(rows, cols, h_mat_in);
 
    transponerMatrix(h_mat_in, h_mat_out, rows, cols, size);
 
    printf("\n***** Time to transpose a matrix of [%dx%d] on GPU: [%f] ms. *****\n\n", rows, cols, elapsed_time_ms);
    printTimeOnFile(rows, cols, elapsed_time_ms);
-   //printMatrix(rows, cols, h_mat_out);
+   printMatrix(rows, cols, h_mat_out);
    free(h_mat_in); free(h_mat_out); cudaFree(dev_mat_in); cudaFree(dev_mat_out);
 }
