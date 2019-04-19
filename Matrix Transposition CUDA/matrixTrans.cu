@@ -27,7 +27,7 @@
 #define NUMBER_THREADS 32
 
 float elapsed_time_ms;  
-int gpudev = 2;
+int gpudev = 0;
 
 char *dev_mat_in, *dev_mat_out;
 
@@ -115,12 +115,12 @@ int main(int argc, char **argv) {
            h_mat_in[i * cols + j] = rand() % (rows * cols);
        }
    }
-   printMatrix(rows, cols, h_mat_in);
+   //printMatrix(rows, cols, h_mat_in);
 
    transponerMatrix(h_mat_in, h_mat_out, rows, cols, size);
 
    printf("\n***** Time to transpose a matrix of [%dx%d] on GPU: [%f] ms. *****\n\n", rows, cols, elapsed_time_ms);
    printTimeOnFile(rows, cols, elapsed_time_ms);
-   printMatrix(rows, cols, h_mat_out);
+   //printMatrix(rows, cols, h_mat_out);
    free(h_mat_in); free(h_mat_out); cudaFree(dev_mat_in); cudaFree(dev_mat_out);
 }
