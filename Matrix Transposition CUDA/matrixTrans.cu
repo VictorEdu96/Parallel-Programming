@@ -27,7 +27,7 @@
 #define NUMBER_THREADS 32
 
 float elapsed_time_ms;  
-int gpudev = 0;
+int gpudev = 1;
 
 char *dev_mat_in, *dev_mat_out;
 
@@ -61,8 +61,8 @@ __global__ void kernelTransposeMatrix(const char *mat_in, char *mat_out, unsigne
 }
 
 void transponerMatrix(char *h_mat_in, char *h_mat_out, unsigned int rows, unsigned int cols, size_t size){
-   unsigned int g_row = (unsigned int)ceil((float)size/32.0);
-   unsigned int g_col = (unsigned int)ceil((float)size/32.0);
+   unsigned int g_row = (rows + NUMBER_THREADS - 1) / NUMBER_THREADS;                                       //(unsigned int)ceil((float)size/32.0);
+   unsigned int g_col = (cols + NUMBER_THREADS - 1) / NUMBER_THREADS;                                       //(unsigned int)ceil((float)size/32.0);
    dim3 bloques(g_col, g_row);
    dim3 hilos(NUMBER_THREADS, NUMBER_THREADS);
    cudaEvent_t start, stop;
@@ -77,6 +77,8 @@ void transponerMatrix(char *h_mat_in, char *h_mat_out, unsigned int rows, unsign
    cudaMalloc(&dev_mat_in, size);
    cudaMalloc(&dev_mat_out, size);
 
+   srand(getpid());
+
    // 2. Copiar datos del Host al Device
    cudaMemcpy(dev_mat_in, h_mat_in, size, cudaMemcpyHostToDevice);
 
@@ -87,13 +89,11 @@ void transponerMatrix(char *h_mat_in, char *h_mat_out, unsigned int rows, unsign
    cudaMemcpy(h_mat_out, dev_mat_out, size, cudaMemcpyDeviceToHost);
 
    // 5. Liberar Memoria
-   cudaFree(dev_mat_in);
-   cudaFree(dev_mat_out);
    cudaEventRecord(stop, 0);
    cudaEventSynchronize(stop);
    cudaEventElapsedTime(&elapsed_time_ms, start, stop);
-   cudaEventDestroy(start); 
-   cudaEventDestroy(stop); 
+   cudaFree(dev_mat_in); cudaFree(dev_mat_out);
+   cudaEventDestroy(start); cudaEventDestroy(stop); 
 }
 //---------------------------------------------------------------------------
 int main(int argc, char **argv) {
@@ -119,7 +119,7 @@ int main(int argc, char **argv) {
 
    transponerMatrix(h_mat_in, h_mat_out, rows, cols, size);
 
-   printf("\n***** Time to transpose a matrix of [%dx%d] on GPU: [%f] ms. *****\n\n", rows, cols, elapsed_time_ms);
+   printf("\n***** Time to transpose a matrix of %dx%d: %f ms. *****\n\n", rows, cols, elapsed_time_ms);
    printTimeOnFile(rows, cols, elapsed_time_ms);
    //printMatrix(rows, cols, h_mat_out);
    free(h_mat_in); free(h_mat_out); cudaFree(dev_mat_in); cudaFree(dev_mat_out);
